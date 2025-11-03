@@ -68,8 +68,6 @@ th{
   font-weight:700;
   background: rgba(255,255,255,0.1);
 }
-
-/* Status text dengan titik di belakang */
 .status-text{
   font-weight:600;
   font-size:0.95rem;
@@ -82,18 +80,33 @@ th{
 .status-text .dot{
   font-size:1.2rem;
 }
-
-/* Warna dot sesuai status */
-.status-approve .dot { color: #39ff14; }   /* Hijau */
-.status-takedown .dot { color: #ff8c00; } /* Oranye */
-.status-process .dot { color: #ffea00; }   /* Kuning */
-.status-rejected .dot { color: #ff0033; }  /* Merah */
+.status-approve .dot { color: #39ff14; }   
+.status-takedown .dot { color: #ff8c00; } 
+.status-process .dot { color: #ffea00; }   
+.status-rejected .dot { color: #ff0033; }  
 
 footer{
-  margin-top:35px;
+  margin-top:20px;
   color:rgba(255,255,255,0.6);
   font-size:0.85rem;
   text-align:center;
+}
+.pagination{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+.page-btn{
+  cursor:pointer;
+  padding:6px 14px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.1);
+  font-weight:600;
+  transition:0.2s;
+}
+.page-btn:hover{
+  background: rgba(255,255,255,0.2);
 }
 @media(max-width:600px){
   th,td{padding:12px 8px;font-size:0.85rem;}
@@ -115,26 +128,75 @@ footer{
         <th>Smartlink</th>
       </tr>
     </thead>
-    <tbody>
-      <tr><td>Sakitnya Tutu</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Ayo Goyang</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Balonte Old</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>DISITU TERKADANG</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>AKIMILABE</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>AKIMILAKUO</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Imut Aisyah</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>SAFONAMIX</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>JANGAN SALAH PASANGAN</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>TEMPE TEMPE</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Dingin Keringetan</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Kadang Bernyanyi</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>TERENA METE</td><td><span class="status-text status-approve">Approve<span class="dot">•</span></span></td><td>Not Available</td></tr>
-      <tr><td>Janda Bodong Remix</td><td><span class="status-text status-process">Process<span class="dot">•</span></span></td><td>Not Available</td></tr>
+    <tbody id="table-body">
+      <!-- Data akan diisi oleh JS -->
     </tbody>
   </table>
+
+  <div class="pagination">
+    <span class="page-btn" id="prev">Prev</span>
+    <span class="page-btn" id="next">Next</span>
+  </div>
 </div>
 
 <footer>© 2025 Dynotic ID</footer>
+
+<script>
+// Data lagu terbaru dulu
+const songs = [
+  {title:"Janda Bodong Remix", status:"process"},
+  {title:"TERENA METE", status:"approve"},
+  {title:"Kadang Bernyanyi", status:"approve"},
+  {title:"Dingin Keringetan", status:"approve"},
+  {title:"TEMPE TEMPE", status:"approve"},
+  {title:"JANGAN SALAH PASANGAN", status:"approve"},
+  {title:"SAFONAMIX", status:"approve"},
+  {title:"Imut Aisyah", status:"approve"},
+  {title:"AKIMILAKUO", status:"approve"},
+  {title:"AKIMILABE", status:"approve"},
+  {title:"DISITU TERKADANG", status:"approve"},
+  {title:"Balonte Old", status:"approve"},
+  {title:"Ayo Goyang", status:"approve"},
+  {title:"Sakitnya Tutu", status:"approve"}
+];
+
+let currentPage = 1;
+const rowsPerPage = 7; // 7 lagu per halaman
+
+function renderTable(){
+  const tableBody = document.getElementById("table-body");
+  tableBody.innerHTML = "";
+  const start = (currentPage-1)*rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageSongs = songs.slice(start, end);
+
+  pageSongs.forEach(song=>{
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${song.title}</td>
+      <td><span class="status-text status-${song.status}">${song.status.charAt(0).toUpperCase() + song.status.slice(1)}<span class="dot">•</span></span></td>
+      <td>Not Available</td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+document.getElementById("prev").addEventListener("click", ()=>{
+  if(currentPage>1){
+    currentPage--;
+    renderTable();
+  }
+});
+
+document.getElementById("next").addEventListener("click", ()=>{
+  if(currentPage*rowsPerPage < songs.length){
+    currentPage++;
+    renderTable();
+  }
+});
+
+renderTable();
+</script>
 
 </body>
 </html>
